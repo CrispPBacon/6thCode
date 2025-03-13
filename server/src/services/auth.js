@@ -1,7 +1,7 @@
-import { User } from "../models/user.js";
+import User from "../models/user.js";
 import { NotFoundError, UnauthorizedError } from "../utils/errors.js";
 
-export async function Login(username, password) {
+export async function loginUser(username, password) {
   const userData = await User.findOne({ username });
   const userExists = Boolean(userData);
 

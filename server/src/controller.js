@@ -1,5 +1,8 @@
-import { User } from "./models/user.js";
-import { Login } from "./services/auth.js";
+import User from "./models/user.js";
+import { loginUser } from "./services/auth.js";
+import thread from "./services/thread.js";
+
+// ! AUTH CONTROLLER
 
 /* POST http://localhost:3000/api/user 
 
@@ -35,7 +38,7 @@ export async function createUser(req, res) {
 export async function login(req, res) {
   try {
     const { username, password } = req.body.data || {};
-    const userId = await Login(username, password);
+    const userId = await loginUser(username, password);
     req.session.user_id = userId;
     return res.status(200).json(userId);
   } catch (e) {
@@ -54,10 +57,13 @@ export async function logout(req, res, next) {
   }
 }
 
+// ! TOPIC CONTROLLER
+
 /* GET http://localhost:3000/api/topic */
-export async function getTopic(req, res, next) {
+export async function getAllTopic(req, res, next) {
   try {
-    return res.status(200);
+    const data = await thread.getAllTopic();
+    return res.status(200).json(data);
   } catch (e) {
     next(e);
   }
@@ -66,7 +72,10 @@ export async function getTopic(req, res, next) {
 /* POST http://localhost:3000/api/topic */
 export async function createTopic(req, res, next) {
   try {
-    return res.status(200);
+    const { title, content } = req.body.data || {};
+    const createdBy = req.session.user_id;
+    const data = await thread.createNewTopic({ title, content, createdBy });
+    return res.status(200).json(data);
   } catch (e) {
     next(e);
   }

@@ -26,3 +26,8 @@ export const validateSignUp = [
   createFieldValidator(["data.password"], 5),
   handleValidationErrors,
 ];
+
+export const validateTopic = [
+  createFieldValidator(["data.title", "data.content"]),
+  handleValidationErrors,
+];

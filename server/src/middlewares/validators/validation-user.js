@@ -1,4 +1,4 @@
-import { User } from "../../models/user.js";
+import User from "../../models/user.js";
 import { isValidSession } from "../../services/auth.js";
 import {
   ConflictError,

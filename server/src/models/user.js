@@ -6,8 +6,7 @@ const user__schema = new mongoose.Schema(
     username: { type: String, required: true },
     password: { type: String, required: true },
     role: { type: String, required: true, default: "default" },
-    first_name: { type: String },
-    last_name: { type: String },
+    avatar: { type: mongoose.Schema.Types.ObjectId, default: null },
   },
   { timestamps: true }
 );

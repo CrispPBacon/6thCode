@@ -5,6 +5,8 @@ import {
   createUser,
   createTopic,
   getAllTopic,
+  profile,
+  changeProfile,
 } from "./controller.js";
 import {
   validateLogin,
@@ -12,6 +14,7 @@ import {
   validateTopic,
 } from "./middlewares/validators/main.js";
 import { verifyAuth } from "./middlewares/auth-handler.js";
+import upload from "./config/multerConfig.js";
 
 const router = express.Router();
 
@@ -21,6 +24,10 @@ router.route("/api/user").post(validateSignUp, createUser);
 
 // ! [PRIVATE] ROUTES
 router.use(verifyAuth);
+router.route("/api/profile").get(profile);
+router
+  .route("/api/profile/change-profile")
+  .post(upload.single("image"), changeProfile);
 router.route("/api/logout").delete(logout);
 router.route("/api/topic").post(validateTopic, createTopic).get(getAllTopic);
 export default router;

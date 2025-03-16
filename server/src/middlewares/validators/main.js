@@ -11,7 +11,7 @@ import {
 export const validateLogin = [
   isNoActiveSession,
   createFieldValidator(["data.username"], 4, [isUserExist]),
-  createFieldValidator(["data.password"], 5),
+  createFieldValidator(["data.password"], 1),
   handleValidationErrors,
 ];
 export const validateSignUp = [

@@ -1,8 +1,38 @@
 import User from "./models/user.js";
-import { loginUser } from "./services/auth.js";
+import { isValidSession, loginUser } from "./services/auth.js";
 import thread from "./services/thread.js";
+import { UnauthorizedError } from "./utils/errors.js";
 
 // ! AUTH CONTROLLER
+
+/* GET http://localhost:3000/api/profile */
+export async function profile(req, res, next) {
+  try {
+    const user = await isValidSession(req.session);
+    if (!user) throw new UnauthorizedError("GET Profile error");
+
+    const defaultProfilePath =
+      "/uploads/9e43206d-2845-40e3-ae3b-ed15d35e3a96.jfif";
+    const defaultProfileUrl =
+      `${req.protocol}://${req.get("host")}` + defaultProfilePath;
+    if (!user?.avatar) user.avatar = defaultProfileUrl;
+
+    console.log(user);
+    return res.status(200).json(user);
+  } catch (e) {
+    next(e);
+  }
+}
+
+/* POST http://localhost:3000/api/user */
+export async function changeProfile(req, res, next) {
+  try {
+    console.log(req.file);
+    return res.status(200).json({ msg: "ok" });
+  } catch (e) {
+    next(e);
+  }
+}
 
 /* POST http://localhost:3000/api/user 
 
@@ -17,7 +47,7 @@ import thread from "./services/thread.js";
     }
   }
 */
-export async function createUser(req, res) {
+export async function createUser(req, res, next) {
   try {
     const user = req.body.data;
     const data = await new User(user).save();
@@ -35,7 +65,7 @@ export async function createUser(req, res) {
     }
   }
 */
-export async function login(req, res) {
+export async function login(req, res, next) {
   try {
     const { username, password } = req.body.data || {};
     const userId = await loginUser(username, password);
@@ -60,7 +90,7 @@ export async function logout(req, res, next) {
 // ! TOPIC CONTROLLER
 
 /* GET http://localhost:3000/api/topic */
-export async function getAllTopic(req, res, next) {
+export async function getAllTopic(_, res, next) {
   try {
     const data = await thread.getAllTopic();
     return res.status(200).json(data);

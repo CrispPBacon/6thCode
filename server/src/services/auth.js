@@ -1,6 +1,7 @@
 import User from "../models/user.js";
 import { NotFoundError, UnauthorizedError } from "../utils/errors.js";
 
+// ! USER CONTROLS
 export async function loginUser(username, password) {
   const userData = await User.findOne({ username });
   const userExists = Boolean(userData);
@@ -12,14 +13,19 @@ export async function loginUser(username, password) {
   return userData._id;
 }
 
+// export async function change
+
 // ! CHECK IF THE USER [IS] LOGGED IN
 export async function isValidSession(session) {
   if (!session || !session.user_id) return false;
 
-  const userData = await User.findById(session.user_id);
+  const userData = await User.findById(session.user_id)
+    .select("-password -createdAt -updatedAt -__v -first_name -last_name")
+    .lean();
   if (!userData) {
     session.destroy();
     return false;
   }
-  return true;
+
+  return userData;
 }

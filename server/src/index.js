@@ -1,9 +1,12 @@
 import express from "express";
 import cors from "cors";
+import path from "path";
+
 import router from "./route.js";
 
 import { connect } from "./config/db.js";
 import { errorHandlerMiddleware } from "./middlewares/error-handler.js";
+import { dirname } from "./utils/general-utils.js";
 
 import session from "express-session";
 import MongoDBStore from "connect-mongodb-session";
@@ -13,6 +16,8 @@ const MongoDBStoreSession = MongoDBStore(session);
 const app = express();
 const PORT = process.env.PORT || 3000;
 const HOST = process.env.HOST || "localhost";
+
+const corsConfig = { credentials: true, origin: "http://localhost:5173" };
 
 /* Session and MongoDBStore Configuration */
 const store = new MongoDBStoreSession({
@@ -38,8 +43,8 @@ const session_config = {
   store: store,
 };
 
-const session_log = (req, _, next) => {
-  // console.log(req.session);
+const session_log = (_req, _, next) => {
+  // console.log(_req.session);
   next();
 };
 
@@ -47,12 +52,10 @@ const session_log = (req, _, next) => {
 app.use([
   express.json(),
   express.urlencoded({ extended: true }),
-  cors(),
-  session(session_config),
-  session_log,
-  router,
-  errorHandlerMiddleware,
+  cors(corsConfig),
 ]);
+app.use("/uploads", express.static(path.join(dirname, "..", "..", "uploads")));
+app.use([session(session_config), session_log, router, errorHandlerMiddleware]);
 
 app.listen(PORT, () => {
   console.log(`Server listening at http://${HOST}:${PORT}`);
